@@ -38,7 +38,7 @@ model = Upstream(\
 > PASTE THE SCRIPT HERE (copied from ```runner_part_freeze.py)
 ```
 
-## Step 4: NR-SSFt fine-tuning
+## Step 4: NR-SSFt fine-tuning with soft-dtw as loss
 ### For HuBERT
 
 Set the hyperparameters in config.yaml file or in bash file as follows:
