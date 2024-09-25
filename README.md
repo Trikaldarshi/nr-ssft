@@ -38,7 +38,8 @@ model = Upstream(\
 > PASTE THE SCRIPT HERE (copied from ```runner_part_freeze.py)
 ```
 
-## Step 4: NR-SSFt fine-tuning with soft-dtw as loss
+## Step 4: 
+## NR-SSFt fine-tuning with soft-dtw as loss
 ### For HuBERT
 
 Set the hyperparameters in config.yaml file or in bash file as follows:
@@ -66,4 +67,7 @@ LOSS_TYPE=softdtw_lav
 
 python3 run_downstream.py -m train -p /path_to_nr_ssft_experiment -u wavlm_base -d librispeech_softdtw_noisy -f -l -1 \
 -o "config.downstream_expert.modelrc.sigma=$SIGMA,,config.downstream_expert.modelrc.gamma=$GAMMA,,config.downstream_expert.modelrc.margin=$MARGIN,,config.downstream_expert.modelrc.loss_type=$LOSS_TYPE,,config.downstream_expert.modelrc.alpha=$ALPHA"
+```
+## NR-SSFt fine-tuning with MSE as loss
 
+Everything remains same, just change the downstream task from librispeech_softdtw_noisy to librispeech_mse_noisy
