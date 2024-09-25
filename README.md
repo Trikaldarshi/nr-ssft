@@ -36,6 +36,7 @@ model = Upstream(\
             refresh = upstream_refresh,
         ).to(self.args.device)
 > PASTE THE SCRIPT HERE (copied from ```runner_part_freeze.py)
+```
 
 ## Step 4: NR-SSFt fine-tuning
 ### For HuBERT
