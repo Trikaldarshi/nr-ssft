@@ -71,3 +71,92 @@ python3 run_downstream.py -m train -p /path_to_nr_ssft_experiment -u wavlm_base 
 ## NR-SSFt fine-tuning with MSE as loss
 
 Everything remains same, just change the downstream task from librispeech_softdtw_noisy to librispeech_mse_noisy
+
+## Step 4: Evaluate the NR-SSFT finetuned model on ASR and PR for SUPERB benchmark
+Download the needed data, set data paths etc for the respective tasks. More info and hyperparameter values are available at [S3PRL/SUPERB](https://github.com/s3prl/s3prl/blob/main/s3prl/downstream/docs/superb.md)
+
+
+### For PR
+Note: Make sure lr is 5.0e − 4 \
+Update the ```libriphone.yaml``` in ```ctc``` downstream task
+```
+    train: ['train-clean-100_seen_noisy']                # Name of data splits to be used as training set
+    dev: ['dev-clean_seen_noisy']                    # Name of data splits to be used as validation set
+    test: ['test-clean']
+    test_seen_noisy: ['test-clean_seen_noisy']
+    test_unseen_noisy: ['test-clean_unseen_noisy']
+```
+
+Training:
+```
+python3 run_downstream.py -p /path_to_pr_experiment -m train -u hubert_base -d ctc -c downstream/ctc/libriphone.yaml \
+-o "config.downstream_expert.datarc.test_base_path=path_to_nr_ssft_experiment/states-3600.ckpt,,config.runner.freeze_layers=False,,config.runner.baseline=custom"
+```
+OR
+```
+python3 run_downstream.py -p /path_to_pr_experiment -m train -u wavlm_base -d ctc -c downstream/ctc/libriphone.yaml \
+-o "config.downstream_expert.datarc.test_base_path=path_to_nr_ssft_experiment/states-3600.ckpt,,config.runner.freeze_layers=False,,config.runner.baseline=custom"
+```
+Testing:
+
+For test
+```
+python3 run_downstream.py -m evaluate -t "test" -e /path_to_pr_experiment/dev-best.ckpt \
+-o "config.downstream_expert.datarc.test_base_path=path_to_nr_ssft_experiment/states-3600.ckpt,,config.runner.freeze_layers=False,,config.runner.baseline=custom"
+```
+For test_seen_noisy
+```
+python3 run_downstream.py -m evaluate -t "test_seen_noisy" -e /path_to_pr_experiment/dev-best.ckpt \
+-o "config.downstream_expert.datarc.test_base_path=path_to_nr_ssft_experiment/states-3600.ckpt,,config.runner.freeze_layers=False,,config.runner.baseline=custom"
+```
+For test_unseen_noisy
+```
+python3 run_downstream.py -m evaluate -t "test_unseen_noisy" -e /path_to_pr_experiment/dev-best.ckpt \
+-o "config.downstream_expert.datarc.test_base_path=path_to_nr_ssft_experiment/states-3600.ckpt,,config.runner.freeze_layers=False,,config.runner.baseline=custom"
+```
+
+### For ASR
+
+Update the``` config.yaml``` file from ```asr``` downstream task downstream_expert.datarc as follows:
+```downstream_expert:
+  datarc:
+    train: ['train-clean-100_seen_noisy']
+    dev-clean: ['dev-clean_seen_noisy']
+    dev-other: ['dev-other']
+    test-clean: ['test-clean']
+    test-other: ['test-other']
+    test-clean_seen_noisy: ['test-clean_seen_noisy']
+    test-clean_unseen_noisy: ['test-clean_unseen_noisy']
+```
+
+Training:
+```
+python3 run_downstream.py -p /path_to_asr_experiment -m train -u hubert_base -d asr \
+-o "config.downstream_expert.datarc.test_base_path=path_to_nr_ssft_experiment/states-3600.ckpt,,config.runner.freeze_layers=False,,config.runner.baseline=custom"
+```
+OR
+```
+python3 run_downstream.py -p /path_to_asr_experiment -m train -u wavlm_base -d asr \
+-o "config.downstream_expert.datarc.test_base_path=path_to_nr_ssft_experiment/states-3600.ckpt,,config.runner.freeze_layers=False,,config.runner.baseline=custom"
+```
+Testing:
+
+For test-clean
+```
+python3 run_downstream.py -m evaluate -t "test-clean" -e /path_to_asr_experiment/dev-clean-best.ckpt \
+-o "config.downstream_expert.datarc.test_base_path=path_to_nr_ssft_experiment/states-3600.ckpt,,config.runner.freeze_layers=False,,config.runner.baseline=custom"
+```
+
+For test-clean_unseen_noisy
+```
+python3 run_downstream.py -m evaluate -t "test-clean_unseen_noisy" -e /path_to_asr_experiment/dev-clean-best.ckpt \
+-o "config.downstream_expert.datarc.test_base_path=path_to_nr_ssft_experiment/states-3600.ckpt,,config.runner.freeze_layers=False,,config.runner.baseline=custom"
+```
+
+For test-clean_seen_noisy
+```
+python3 run_downstream.py -m evaluate -t "test-clean_seen_noisy" -e /path_to_asr_experiment/dev-clean-best.ckpt \
+-o "config.downstream_expert.datarc.test_base_path=path_to_nr_ssft_experiment/states-3600.ckpt,,config.runner.freeze_layers=False,,config.runner.baseline=custom"
+```
+
+
